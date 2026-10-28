@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 // Placeholder listings until the backend has a listings endpoint.
@@ -38,6 +38,16 @@ const UNREAD_MESSAGES = 3;
 
 export default function TradeScreen() {
   const [radiusKm, setRadiusKm] = useState(10);
+
+  // IDs of the listings the user has added to their wishlist.
+  const [wishlist, setWishlist] = useState<string[]>([]);
+
+  // Add the ID if it isn't in the list yet, remove it if it is.
+  const toggleWishlist = (id: string) => {
+    setWishlist((current) =>
+      current.includes(id) ? current.filter((savedId) => savedId !== id) : [...current, id],
+    );
+  };
 
   // Only show listings within the selected distance.
   const listings = LISTINGS.filter((listing) => listing.distanceKm <= radiusKm);
@@ -104,7 +114,12 @@ export default function TradeScreen() {
         {/* Listings */}
         <View style={styles.grid}>
           {listings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
+             <ListingCard
+              key={listing.id}
+              listing={listing}
+              saved={wishlist.includes(listing.id)}
+              onToggleWishlist={() => toggleWishlist(listing.id)}
+            />
           ))}
         </View>
 
@@ -133,7 +148,13 @@ export default function TradeScreen() {
 
 // ─── Pieces ──────────────────────────────────────────────────────────────────
 
-function ListingCard({ listing }: { listing: Listing }) {
+type ListingCardProps = {
+  listing: Listing;
+  saved: boolean;
+  onToggleWishlist: () => void;
+};
+
+function ListingCard({ listing, saved, onToggleWishlist }: ListingCardProps) {
   return (
     <View style={styles.card}>
       {/* Card picture (placeholder colour until real card images are used) */}
@@ -146,6 +167,26 @@ function ListingCard({ listing }: { listing: Listing }) {
             {listing.cardName}
           </Text>
         </View>
+         {/* Wishlist heart — top right of the picture */}
+        <Pressable
+          onPress={onToggleWishlist}
+          accessibilityRole="button"
+          accessibilityState={{ selected: saved }}
+          accessibilityLabel={
+            saved
+              ? `Remove ${listing.cardName} from wishlist`
+              : `Add ${listing.cardName} to wishlist`
+          }
+          style={styles.wishlistButton}
+        >
+          <View style={[styles.wishlistCircle, saved && styles.wishlistCircleSaved]}>
+            <MaterialCommunityIcons
+              name={saved ? 'heart' : 'heart-plus-outline'}
+              size={19}
+              color={saved ? '#FFFFFF' : '#171717'}
+            />
+          </View>
+        </Pressable>
       </View>
 
       {/* Details */}
@@ -322,6 +363,28 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: 15,
     color: '#F4EEDF',
+  },
+    // The 44×44 tappable area; the visible circle inside it is smaller.
+  wishlistButton: {
+    position: 'absolute',
+    top: 3,
+    right: 3,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wishlistCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E2D7BD',
+    boxShadow: '0 2px 6px rgba(23, 23, 23, 0.35)',
+  },
+  wishlistCircleSaved: {
+    backgroundColor: '#2e7d32',
   },
   cardInfo: {
     paddingHorizontal: 2,
