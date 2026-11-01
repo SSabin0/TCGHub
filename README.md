@@ -37,7 +37,7 @@ Option 1:
 	again copy the .env.exmaple to .env and fill out the values:
 	`cp .env.example .env`
 	`nano .env`
-	note: make sure the values for the database url match what you put down for the database's env: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}${POSTGRES_DATABASE}`
+	note: make sure the values for the database url match what you put down for the database's env: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}${POSTGRES_DATABASE}`
 	next generate the prisma types and push the schema to the database
 	`npx prisma generate`
 	`npx prisma db push`
@@ -54,7 +54,7 @@ Option 2:
 	then copy the .env.exmaple to .env and fill out the values:
 	`cp .env.example .env`
 	`nano .env`
-	note: make sure the values for the database url match what you put down for the database's env: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}${POSTGRES_DATABASE}`
+	note: make sure the values for the database url match what you put down for the database's env: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}${POSTGRES_DATABASE}`
 	cd to the apps directory:
 	`cd ../`
 	and again copy the .env.exmaple to .env and fill out the values:
