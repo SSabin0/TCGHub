@@ -40,6 +40,7 @@ export default class ChatController {
     request: FastifyRequest<{ Body: ChatCreationBodyInterface }>,
     reply: FastifyReply,
   ) {
+    // TODO: handle invalid userId in members
     const jwt: UserJwtType = UserJwt.parse(request.user);
     const chatDetails: ChatWithMembersCreationInterface = request.body;
     chatDetails.members.push(jwt.userId);
@@ -128,6 +129,6 @@ export default class ChatController {
       sender_id: userId,
       body: message,
     });
-    return reply.code(200).send({ success: 'message sent' });
+    return reply.code(201).send({ success: 'message sent' });
   }
 }

@@ -6,19 +6,62 @@ export default async function chatRoutes(fastify: Fastify.FastifyInstance, optio
 
   fastify.get<{ Params: UserIdParamsInterface }>(
     '/:userId',
-    { schema: { params: UserIdParamsSchema } },
+    {
+      schema: {
+        params: UserIdParamsSchema,
+        response: {
+          503: {
+            description: 'Service Unavailable',
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
     controller.getUserDetails,
   );
 
   fastify.patch<{ Body: {}; Params: UserIdParamsInterface }>(
     '/:userId',
-    { preHandler: [fastify.jwt_verify], schema: { params: UserIdParamsSchema, body: {} } },
+    {
+      preHandler: [fastify.jwt_verify],
+      schema: {
+        params: UserIdParamsSchema,
+        body: {},
+        response: {
+          503: {
+            description: 'Service Unavailable',
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
     controller.updateUserDetails,
   );
 
   fastify.delete<{ Body: {}; Params: UserIdParamsInterface }>(
     '/:userId',
-    { preHandler: [fastify.jwt_verify], schema: { params: UserIdParamsSchema, body: {} } },
+    {
+      preHandler: [fastify.jwt_verify],
+      schema: {
+        params: UserIdParamsSchema,
+        body: {},
+        response: {
+          503: {
+            description: 'Service Unavailable',
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
     controller.deleteUser,
   );
 }

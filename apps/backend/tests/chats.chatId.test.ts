@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { LightMyRequestResponse } from 'fastify';
 import buildServer from '../src/app.js';
 import { ENV } from '../src/utils/env.js';
@@ -10,11 +10,17 @@ import {
   userTwo,
   userTwoHash,
 } from './helpers/userPresets.js';
-import { createChat } from './helpers/chatPresets.js';
+import { createChat, invalidChatId } from './helpers/chatPresets.js';
 
 const server = await buildServer({}, ENV);
 
 describe('GET /api/v1/chats/:chatId', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns details of a chat the user is apart of', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     await createUser({ ...userTwo, hash: userTwoHash });
@@ -40,9 +46,30 @@ describe('GET /api/v1/chats/:chatId', () => {
       joined_at: expect.any(String),
     });
   });
+
+  it("handles request for chat that doesn't exist", async () => {
+    await createUser({ ...userOne, hash: userOneHash });
+    const response = await server.inject({
+      method: 'GET',
+      url: `/api/v1/chats/${invalidChatId}`,
+      headers: {
+        Authorization: `Bearer ${userOneAccessToken}`,
+      },
+    });
+    const payload = await response.json();
+
+    expect(response.statusCode).toBe(404);
+    expect(payload).toEqual({ error: 'Chat Not Found' });
+  });
 });
 
 describe('PATCH /api/v1/chats/:chatId', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns service unavailable', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     await createUser({ ...userTwo, hash: userTwoHash });

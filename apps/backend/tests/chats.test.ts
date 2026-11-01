@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { LightMyRequestResponse } from 'fastify';
 import buildServer from '../src/app.js';
 import { ENV } from '../src/utils/env.js';
@@ -16,6 +16,12 @@ import { ChatDetailsInterface, createChats } from './helpers/chatPresets.js';
 const server = await buildServer({}, ENV);
 
 describe('GET /api/v1/chats', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns chats user is part of', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     await createUser({ ...userTwo, hash: userTwoHash });
@@ -60,7 +66,7 @@ describe('GET /api/v1/chats', () => {
     });
     const payload = await response.json();
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(401);
     expect(payload).toMatchObject({
       error: 'User Not Found',
     });
@@ -68,6 +74,12 @@ describe('GET /api/v1/chats', () => {
 });
 
 describe('POST /api/v1/chats', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('lets a logged in user create a chat', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     const response: LightMyRequestResponse = await server.inject({
@@ -94,7 +106,14 @@ describe('POST /api/v1/chats', () => {
 });
 
 describe('DELETE /api/v1/chats/', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns service unavailable', async () => {
+    await createUser({ ...userOne, hash: userOneHash });
     const response = await server.inject({
       method: 'DELETE',
       url: '/api/v1/chats/',
@@ -104,7 +123,7 @@ describe('DELETE /api/v1/chats/', () => {
     });
     const payload = await response.json();
 
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(503);
     // expect(payload).toMatchObject({
     // error: 'not implemented yet',
     // });

@@ -1,6 +1,6 @@
 import { LightMyRequestResponse } from 'fastify';
 import buildServer from '../src/app.js';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ENV } from '../src/utils/env.js';
 import {
   badEmail,
@@ -14,9 +14,15 @@ import {
 
 const server = await buildServer({}, ENV);
 
-describe('/api/v1/auth/login', () => {
+describe('POST /api/v1/auth/login', () => {
   beforeEach(async () => {
     await createUser({ ...userOne, hash: userOneHash });
+  });
+
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
   });
 
   it('accepts valid credentials', async () => {
@@ -32,7 +38,7 @@ describe('/api/v1/auth/login', () => {
     const payload = await response.json();
 
     expect(response.statusCode).toBe(200);
-    expect(payload).toHaveProperty('access_token');
+    expect(payload).toHaveProperty('accessToken');
   });
 
   it('rejects invalid credentials', async () => {

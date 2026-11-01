@@ -7,6 +7,8 @@ export interface ChatDetailsInterface {
   memberIDs: Array<string>;
 }
 
+export const invalidChatId = '572b4ea4-1b55-4927-8c55-34fc7ee1c910';
+
 export async function createChat(
   title: string,
   type: ChatType,

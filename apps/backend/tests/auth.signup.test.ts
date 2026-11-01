@@ -1,6 +1,6 @@
 import { LightMyRequestResponse } from 'fastify';
 import buildServer from '../src/app.js';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { ENV } from '../src/utils/env.js';
 import {
   createUser,
@@ -16,7 +16,13 @@ import { verifyPassword } from '../src/utils/hashing.js';
 
 const server = await buildServer({}, ENV);
 
-describe('/api/v1/auth/signup', () => {
+describe('GET /api/v1/auth/signup', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('creates user with valid details', async () => {
     const response: LightMyRequestResponse = await server.inject({
       method: 'POST',
@@ -35,7 +41,7 @@ describe('/api/v1/auth/signup', () => {
     }
 
     expect(response.statusCode).toBe(201);
-    expect(payload).toMatchObject({ response: 'Account creation successful' });
+    expect(payload).toMatchObject({ success: 'Account creation successful' });
     expect(databaseUser).toMatchObject({
       username: userOne.username,
       email: userOne.email,
@@ -60,7 +66,7 @@ describe('/api/v1/auth/signup', () => {
     });
     const responsePayload = await response.json();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(responsePayload).toMatchObject({ error: 'Email already registered' });
   });
 
@@ -79,7 +85,7 @@ describe('/api/v1/auth/signup', () => {
     });
     const responsePayload = await response.json();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(409);
     expect(responsePayload).toMatchObject({ error: 'Username already registered' });
   });
 });

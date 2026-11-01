@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { LightMyRequestResponse } from 'fastify';
 import buildServer from '../src/app.js';
 import { ENV } from '../src/utils/env.js';
@@ -17,6 +17,12 @@ import { createMessages } from './helpers/messagePresets.js';
 const server = await buildServer({}, ENV);
 
 describe('GET /api/v1/chats/:chatId/messages', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns all messages in a chat for a logged in user', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     await createUser({ ...userTwo, hash: userTwoHash });
@@ -74,7 +80,7 @@ describe('GET /api/v1/chats/:chatId/messages', () => {
       },
     });
     const payload = await response.json();
-    expect(response.statusCode).toBe(403);
+    expect(response.statusCode).toBe(401);
     expect(payload).toMatchObject({
       error: 'User Not Found',
     });
@@ -82,6 +88,12 @@ describe('GET /api/v1/chats/:chatId/messages', () => {
 });
 
 describe('POST /api/v1/chats/:chatId/messages', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('lets logged in member send a message', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     await createUser({ ...userTwo, hash: userTwoHash });
@@ -106,7 +118,7 @@ describe('POST /api/v1/chats/:chatId/messages', () => {
 
     //   }
     // })
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(201);
     expect(payload).toMatchObject({
       success: 'message sent',
     });

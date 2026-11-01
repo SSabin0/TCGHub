@@ -27,7 +27,7 @@ export default function registerJwtDecorator(fastify: FastifyInstance) {
     } catch (error) {
       /* c8 ignore else */
       if (error instanceof NotFoundError) {
-        return reply.code(403).send({ error: 'User Not Found' });
+        return reply.code(401).send({ error: 'User Not Found' });
       } else {
         throw error;
       }
