@@ -47,7 +47,7 @@ finally run one of these to start the server: \
 `npm run build; npm run start` - one of build and run \
 `npm run prod` - coninues rebuiling on changes, no typeschecking \
 `watchexec -r -w src npm run build` in one terminal and \
-`npx run dev` in another - this will continuely rebuild and reload with typeschecking
+`npm run dev` in another - this will continuely rebuild and reload with typeschecking
 
 ### Option 2:
 cd to the apps directory: \
