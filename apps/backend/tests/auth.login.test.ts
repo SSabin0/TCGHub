@@ -14,7 +14,7 @@ import {
 
 const server = await buildServer({}, ENV);
 
-describe('/api/v1/auth/login', () => {
+describe('POST /api/v1/auth/login', () => {
   beforeEach(async () => {
     await createUser({ ...userOne, hash: userOneHash });
   });

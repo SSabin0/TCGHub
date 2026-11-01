@@ -16,7 +16,7 @@ import { verifyPassword } from '../src/utils/hashing.js';
 
 const server = await buildServer({}, ENV);
 
-describe('/api/v1/auth/signup', () => {
+describe('GET /api/v1/auth/signup', () => {
   afterEach(() => {
     const found = [...server.specViolations];
     server.specViolations.length = 0;

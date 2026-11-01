@@ -12,7 +12,7 @@ import {
 
 const server = await buildServer({}, ENV);
 
-describe('/api/v1/auth/protected', () => {
+describe('GET /api/v1/auth/protected', () => {
   beforeEach(async () => {
     await createUser({ ...userOne, hash: userOneHash });
   });
