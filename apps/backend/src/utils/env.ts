@@ -2,8 +2,8 @@ import { z } from 'zod';
 import dotenv from 'dotenv';
 import path from 'path';
 
-/* c8 ignore next */
 const nodeEnv = process.env.NODE_ENV;
+/* c8 ignore next */
 const envFile = path.join(process.cwd(), nodeEnv ? `.env.${nodeEnv}` : `.env`);
 
 dotenv.config({ path: envFile, quiet: true });

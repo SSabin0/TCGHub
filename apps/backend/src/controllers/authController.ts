@@ -31,8 +31,8 @@ export default class AuthController {
     }
 
     const jwtDetails: UserJwtType = { userId: user.id };
-    const access_token = request.server.jwt.sign(jwtDetails);
-    return reply.code(200).send({ access_token: access_token });
+    const accessToken = request.server.jwt.sign(jwtDetails);
+    return reply.code(200).send({ accessToken: accessToken });
   }
 
   /**
@@ -42,13 +42,13 @@ export default class AuthController {
     let existingUser = null;
     try {
       existingUser = await facade.getUserByEmail(request.body['email']);
-      return reply.code(400).send({ error: 'Email already registered' });
+      return reply.code(409).send({ error: 'Email already registered' });
     } catch (error) {
       /* c8 ignore else */
       if (error instanceof NotFoundError) {
         try {
           existingUser = await facade.getUserByUsername(request.body['username']);
-          return reply.code(400).send({ error: 'Username already registered' });
+          return reply.code(409).send({ error: 'Username already registered' });
         } catch (error) {
           /* c8 ignore else */
           if (error instanceof NotFoundError) {
@@ -63,13 +63,13 @@ export default class AuthController {
     }
 
     await facade.createUser(request.body);
-    reply.code(201).send({ response: 'Account creation successful' });
+    reply.code(201).send({ success: 'Account creation successful' });
   }
 
   /**
    * get request handling for auth/protected
    */
   async protectedGet(request: FastifyRequest, reply: FastifyReply) {
-    return reply.code(200).send({ response: 'verified and logged in' });
+    return reply.code(200).send({ success: 'verified and logged in' });
   }
 }

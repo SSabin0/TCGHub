@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { LightMyRequestResponse } from 'fastify';
 import buildServer from '../src/app.js';
 import { ENV } from '../src/utils/env.js';
@@ -7,6 +7,12 @@ import { createUser, userOne, userOneAccessToken, userOneHash } from './helpers/
 const server = await buildServer({}, ENV);
 
 describe('GET /api/v1/user/:userId', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns service unavailable', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     const response: LightMyRequestResponse = await server.inject({
@@ -26,6 +32,12 @@ describe('GET /api/v1/user/:userId', () => {
 });
 
 describe('PATCH /api/v1/user/:userId', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns service unavailable', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     const response: LightMyRequestResponse = await server.inject({
@@ -45,6 +57,12 @@ describe('PATCH /api/v1/user/:userId', () => {
 });
 
 describe('DELETE /api/v1/user/:userId', () => {
+  afterEach(() => {
+    const found = [...server.specViolations];
+    server.specViolations.length = 0;
+    expect(found).toEqual([]);
+  });
+
   it('returns service unavailable', async () => {
     await createUser({ ...userOne, hash: userOneHash });
     const response: LightMyRequestResponse = await server.inject({
