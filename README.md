@@ -1,44 +1,66 @@
 # Running TCGHub:
 
-## Running the database:
+Step 0:
+Requirements:
+node >=26.12.0
+docker
+docker-compose
 
-1. `cd app/database`
-2. Create a `.env.development`
-3. Inside put the port number for postgres in the docker and postgres on the host as well as the database name to use:```POSTGRES_PORT=PORT
-		     POSTGRES_HOST_PORT=HOST_PORT
-		     POSTGRES_DB=DBNAME```
-4. next, create a `secrets/` directory, inside make a `postgres_password.txt` and `postgres_user.txt` files
-5. put the password and username for postgres inside
-6. run `docker-compose -f docker-compose.database.yml --env-file .env.development up`
+Step 1:
+clone the repo:
+	`git clone git@github.com:Opabinia9/TCGHub.git`
 
+Step 2:
+	there are two ways to run the backend and database
+	Option 1:
+		localy run the docker database
+		and then starting the backend with node
+	Option 2:
+		run the whole thing with docker compose
+	Advice:
+		chose option 1 if you are devoloping the backed itself, chose option 2 if you just need the backend runing
 
-## Running the backend:
-
-1. `cd apps/backend`
-2. `npm install`
-3. Create a `.env` file and fill in your credentials (see `.env.example`):
-```
-   # port number for server
-   SERVER_PORT=PORT_NUMBER
-   # secret used to sign JWTs
-   SERVER_SECRET=
-   # username for postgres
-   POSTGRES_USER=
-   # password for postgres
-   POSTGRES_PASSWORD=
-   # port for postgres
-   POSTGRES_PORT=
-   # ip/url for postgres
-   POSTGRES_URL=
-   # postgres database to use
-   POSTGRES_DATABASE=
-   # URL of database in format "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}/${POSTGRES_DATABASE}"
-   DATABASE_URL=
-```
-   **This step must happen before the next one** — `npx prisma generate` requires `DATABASE_URL` to already be set, and will fail with a `PrismaConfigEnvError` if `.env` doesn't exist yet.
-4. `npx prisma generate`
-5. If `schema.prisma` is in the `prisma/` directory and this is your first time setting up the database, apply the schema:
-   `npx prisma migrate dev --name init`
-6. Run it:
-   - One-off: `npm run build` then `npm run start`
-   - Reloading on changes: `watchexec -r -w src npm run build` then `npm run dev`
+Option 1:
+	cd into the database directory:
+	`cd TCGHub/apps/database`
+	copy the .env.test to .env and fill out the values:
+	`cp .env.example .env`
+	`nano .env`
+	run docker compose up:
+	`docker-compose -f database.yml up`
+	or with --env-file to use a diffent file:
+	`docker-compose -f docker-compose.database.yml --env-file .env.development up`
+	next move to the backend:
+	`cd ../backend/`
+	and run npm install:
+	`npm install`
+	again copy the .env.exmaple to .env and fill out the values:
+	`cp .env.example .env`
+	`nano .env`
+	note: make sure the values for the database url match what you put down for the database's env: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}${POSTGRES_DATABASE}`
+	next generate the prisma types and push the schema to the database
+	`npx prisma generate`
+	`npx prisma db push`
+	finally run one of these to start the server:
+	`npm run build; npm run start` - one of build and run
+	`npm run prod` - coninues rebuiling on changes, no typeschecking
+	`watchexec -r -w src npm run build` in one terminal and
+	`npx run dev` in another - this will continuely rebuild and reload with typeschecking
+Option 2:
+	cd into the backend directory:
+	`cd TCGHub/apps/backend`
+	and run npm install:
+	`npm install`
+	then copy the .env.exmaple to .env and fill out the values:
+	`cp .env.example .env`
+	`nano .env`
+	note: make sure the values for the database url match what you put down for the database's env: `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_URL}:${POSTGRES_PORT}${POSTGRES_DATABASE}`
+	cd to the apps directory:
+	`cd ../`
+	and again copy the .env.exmaple to .env and fill out the values:
+	`cp .env.example .env`
+	`nano .env`
+	then run docker-compose up to run the backend and database:
+	`docker-compose up`
+	and run with the `--build` flag to rebuild the image if you change the backend .env or code
+	`docker-compose up --build`

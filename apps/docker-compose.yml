@@ -1,0 +1,21 @@
+services:
+  backend:
+    container_name: tcghub-backend
+    build:
+      context: backend
+      dockerfile: ${BACKEND_DOCKERFILE}
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_HOST_PORT}"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: tcghub-database
+    extends:
+      file: ${DATABASE_YML}
+      service: postgres
+    volumes:
+      - postgres_data2:/var/lib/postgresql
+
+volumes:
+  postgres_data2:

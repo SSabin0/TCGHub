@@ -1,0 +1,17 @@
+FROM node:26
+
+WORKDIR /backend
+
+COPY package.json package-lock.json ./
+
+RUN npm ci
+
+ADD prisma7.config.ts tsconfig.json ./
+ADD ./.env ./.env
+ADD prisma/ ./prisma/
+ADD src/ ./src/
+
+EXPOSE 8080
+
+RUN ["npx", "prisma", "generate"]
+CMD ["/bin/bash", "-c", "npx prisma db push; npm run prod"]
